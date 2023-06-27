@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        maven 'maven3.9.2'
+    }
+
+    stages {
+        stage('clone') {
+            steps {
+                // Get some code from a GitHub repository
+                git credentialsId: '06d05c58-330b-42fe-b0bb-3bdc7070faf7', url: 'https://github.com/olorunfemi007/maven-web-application.git'
+
+                // Run Maven on a Unix agent.
+                //sh "mvn -Dmaven.test.failure.ignore=true clean package"
+
+                // To run Maven on a Windows agent, use
+                // bat "mvn -Dmaven.test.failure.ignore=true clean package"
+            }
+        }
+        stage('build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('codeQuality') {
+            steps {
+             sh 'mvn sonar:sonar'
+        }
+    }
+    
+    stage('artifactory') {
+        steps {
+            sh 'mvn deploy'
+        }
+    }
+    stage('Approval'){
+        steps {
+    timeout(time:8, unit: 'HOURS' ) {
+      input message: 'Please verify and approve'
+    }
+        }
+    }
+    stage('appServer') {
+        steps {
+            deploy adapters: [tomcat9(credentialsId: '06d05c58-330b-42fe-b0bb-3bdc7070faf7', path: '', url: 'http://54.165.196.73:8080/')], contextPath: null, onFailure: false, war: 'target/*war'
+        }
+    }
+    }
+         post {
+                // If Maven was able to run the tests, even if some of the test
+                // failed, record the test results and archive the jar file.
+                success {
+                    sh 'echo successful pipeline job'
+                }
+            }
+    }
