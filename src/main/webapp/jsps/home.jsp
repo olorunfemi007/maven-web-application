@@ -14,7 +14,7 @@
 	           We are raising millionaires in IT automation.
 	We offer Training for DevOps with Linux and Cloud equipping IT Engineers for best performance.
 	Class32 will start on April 15, 2023. </h1>
-	<p>First try to write a multi-pipeline job with poll scm</p>
+	<p>First try to write a multi-pipeline job with poll scm 2023</p>
 <hr>
 <br>
 	<h1><h3> Server Side IP Address </h3><br>
